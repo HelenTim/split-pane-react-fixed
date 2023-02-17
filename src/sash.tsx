@@ -34,7 +34,7 @@ export default function Sash({
                 className
             )}
             onMouseEnter={(e) => {
-                onSashMouseEnter?.(e);
+                onSashMouseEnter?.(e, others.key);
                 timeout.current = setTimeout(() => {
                     setActive(true);
                 }, 150);

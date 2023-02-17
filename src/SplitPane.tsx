@@ -233,7 +233,7 @@ const SplitPane = ({
       nextSizes[i + 1] -= distanceX;
       referSizeRef.current = nextSizes;
       
-      onChange(nextSizes);
+      onChange(nextSizes, e);
     },
     [paneLimitSizes, onChange]
   );

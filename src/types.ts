@@ -36,7 +36,7 @@ export interface ISplitProps extends HTMLElementProps {
    */
   sizes: (string | number)[];
   sashRender: (index: number, active: boolean) => React.ReactNode;
-  onChange: (sizes: number[]) => void;
+  onChange: (sizes: number[], e: MouseEvent) => void;
   onDragStart?: (e: MouseEvent) => void;
   onDragEnd?: (e: MouseEvent) => void;
   onSashMouseEnter?: (e: MouseEvent) => void;
@@ -58,7 +58,7 @@ export interface ISashProps {
   onDragStart: React.MouseEventHandler<HTMLDivElement>;
   onDragging: React.MouseEventHandler<HTMLDivElement>;
   onDragEnd: React.MouseEventHandler<HTMLDivElement>;
-  onSashMouseEnter?: (e: MouseEvent) => void;
+  onSashMouseEnter?: (e: MouseEvent, index: number) => void;
 }
 
 export interface ISashContentProps {
