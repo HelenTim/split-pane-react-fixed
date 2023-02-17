@@ -24,7 +24,7 @@
     "flexbox",
     "components"
   ],
-  "author": "yyllff",
+  "author": "HeLenTim",
   "license": "MIT",
   "devDependencies": {
     "@babel/core": "^7.18.0",
@@ -47,7 +47,7 @@
     "typescript": "^4.6.3",
     "vite": "^2.9.9"
   },
-  "repository": "https://github.com/yyllff/split-pane-react",
+  "repository": "https://github.com/HelenTim/split-pane-react-fixed",
   "publishConfig": {
     "registry": "https://registry.npmjs.org/"
   },

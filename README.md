@@ -1,7 +1,6 @@
+中文](/docs/中文文档.md)
 
-[中文](/docs/中文文档.md)
-
-# split-pane-react
+# split-pane-react-fixed
 > Resizable split panes for [React.js](http://reactjs.org).Check out the [live demo](https://yyllff.github.io/split-pane-react/). Different [themes](https://codesandbox.io/s/split-pane-themes-xmsqtt).
 
 ## Features
@@ -12,15 +11,18 @@
 - 😎**React16.8** version at least, and **React18** version at the same time.
 - 👷‍♂️Support flexible and convenient **customization of sash**.
 
+## reference
+
+[split-pane-react](https://www.npmjs.com/package/split-pane-react)
 
 ## Installing
 
 ````sh
 # use npm
-npm install split-pane-react
+npm install split-pane-react-fixed
 
 # or if you use yarn
-yarn add split-pane-react
+yarn add split-pane-react-fixed
 ````
 
 ## Example Usage
@@ -92,7 +94,7 @@ function App () {
 | className | pane class name | string | void |
 | minSize | Limit the minimum size of the panel | string \| number | void |
 | maxSize | Limit the maximum size of this panel | string\|number | void |
-| primary | keep size of the  pane | boolean | false |
+| primary | The size of the pane will not be changed first | boolean | false |
 
 ## themes
 
