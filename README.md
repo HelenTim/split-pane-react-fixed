@@ -29,8 +29,8 @@ yarn add split-pane-react-fixed
 
 ```jsx
 import React, { useState } from 'react';
-import SplitPane, { Pane } from 'split-pane-react';
-import 'split-pane-react/esm/themes/default.css';
+import SplitPane, { Pane } from 'split-pane-react-fixed';
+import 'split-pane-react-fixed/esm/themes/default.css';
 
 function style (color) {
   return {
