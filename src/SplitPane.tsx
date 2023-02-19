@@ -24,20 +24,23 @@ import {
 import { IAxis, ISplitProps, IPaneConfigs, ICacheSizes } from "./types";
 
 const SplitPane = ({
-    children,
-    sizes: propSizes,
-    allowResize = true,
-    split = "vertical",
-    className: wrapClassName,
-    sashRender = (_, active) => <SashContent active={active} type="vscode" />,
-    resizerSize = 4,
-    performanceMode = false,
-    onChange = () => null,
-    onDragStart = () => null,
-    onDragEnd = () => null,
-    onSashMouseEnter = () =>{ },
+  children,
+  sizes: propSizes,
+  notComputedDis = false,
+  allowResize = true,
+  split = "vertical",
+  className: wrapClassName,
+  sashRender = (_, active) => <SashContent active={active} type="vscode" />,
+  resizerSize = 4,
+  performanceMode = false,
+  onChange = () => null,
+  onDragStart = () => null,
+  onDragEnd = () => null,
+  onSashMouseEnter = () => {},
   ...others
 }: ISplitProps) => {
+  const record = useRef<boolean>(false);
+  const eventSelf = useRef<any>(null);
   const axis = useRef<IAxis>({ x: 0, y: 0 });
   const wrapper = useRef<HTMLDivElement>(null);
   const cacheSizes = useRef<ICacheSizes>({ sizes: [], sashPosSizes: [] });
@@ -46,6 +49,7 @@ const SplitPane = ({
   const referSizeRef = useRef<number[]>([]);
 
   useEffect(() => {
+    record.current = false;
     const resizeObserver = new ResizeObserver(() => {
       setWrapperRect(wrapper?.current?.getBoundingClientRect() ?? {});
     });
@@ -91,6 +95,7 @@ const SplitPane = ({
         const size = assertsSize(propSizes[index], wrapSize);
         size === Infinity ? count++ : (curSum += size);
         _.props.primary && hasPrimarys.push(index);
+        referSizeRef.current[index] = size;
         return size;
       });
 
@@ -106,7 +111,7 @@ const SplitPane = ({
 
       // resize or illegal size input,recalculate pane sizes
       // 拖动之后才进入
-          
+
       curSum = referSizeRef.current.reduce((before, curt) => before + curt, 0);
       if (curSum > wrapSize || (!count && curSum < wrapSize)) {
         let cacheNum = curSum - wrapSize;
@@ -114,6 +119,7 @@ const SplitPane = ({
 
         computedRes = res.map((size, index) => {
           if (hasPrimarys.includes(index)) {
+            referSizeRef.current[index] = size;
             return size;
           }
 
@@ -177,7 +183,7 @@ const SplitPane = ({
         return [...propSizes];
       }
     },
-    [...propSizes, children.length, wrapSize]
+    [propSizes, children.length, wrapSize, notComputedDis]
   );
 
   const sashPosSizes = useMemo(
@@ -190,6 +196,7 @@ const SplitPane = ({
       document?.body?.classList?.add(bodyDisableUserSelect);
       axis.current = { x: e.pageX, y: e.pageY };
       cacheSizes.current = { sizes, sashPosSizes };
+      eventSelf.current = e;
       setDragging(true);
       onDragStart(e);
     },
@@ -206,11 +213,51 @@ const SplitPane = ({
     },
     [onDragEnd, sizes, sashPosSizes]
   );
+  const change = useMemo(() => {
+    if (!notComputedDis) {
+      record.current = !notComputedDis;
+    }
+  }, [notComputedDis]);
 
   const onDragging = useCallback(
     function (e, i) {
+      console.log({ notComputedDis });
+      if (notComputedDis) {
+        onChange([...sizes], e);
+        return;
+      }
+
+      let leftDis = undefined;
+      let recordAxis = undefined;
+      if (record.current && !notComputedDis && e.movementX > 0) {
+        leftDis = eventSelf.current.currentTarget.getBoundingClientRect().left;
+      }
+      if (
+        record.current &&
+        !notComputedDis &&
+        e.movementX > 0 &&
+        e.pageX < leftDis
+      ) {
+        recordAxis = { x: e.pageX, y: e.pageY };
+      }
+
+      if (
+        record.current &&
+        !notComputedDis &&
+        e.movementX > 0 &&
+        e.pageX == leftDis
+      ) {
+        leftDis = undefined;
+        record.current = false;
+        recordAxis = { x: e.pageX, y: e.pageY };
+      }
+
+      if (e.movementX < 0) {
+        recordAxis = undefined;
+      }
       const curAxis = { x: e.pageX, y: e.pageY };
-      let distanceX = curAxis[splitAxis] - axis.current[splitAxis];
+      let distanceX =
+        (recordAxis ?? curAxis)[splitAxis] - axis.current[splitAxis];
 
       const leftBorder = -Math.min(
         sizes[i] - paneLimitSizes[i][0],
@@ -220,6 +267,11 @@ const SplitPane = ({
         sizes[i + 1] - paneLimitSizes[i + 1][0],
         paneLimitSizes[i][1] - sizes[i]
       );
+
+      console.log({ callsizes: sizes });
+      console.log({ callsizes: [...sizes] });
+      console.log({ old: sizes[1] + "" });
+      console.log({ now: referSizeRef.current[1] + "" });
 
       if (distanceX < leftBorder) {
         distanceX = leftBorder;
@@ -232,10 +284,10 @@ const SplitPane = ({
       nextSizes[i] += distanceX;
       nextSizes[i + 1] -= distanceX;
       referSizeRef.current = nextSizes;
-      
+
       onChange(nextSizes, e);
     },
-    [paneLimitSizes, onChange]
+    [paneLimitSizes, onChange, notComputedDis]
   );
 
   const paneFollow = !(performanceMode && isDragging);
@@ -265,6 +317,7 @@ const SplitPane = ({
               ...paneProps.style,
               [sizeName]: paneSizes[childIndex],
               [splitPos]: panePoses[childIndex],
+              willChange: sizeName,
             }}
           >
             {isPane ? paneProps.children : childNode}
@@ -274,6 +327,7 @@ const SplitPane = ({
       {sashPosSizes.slice(1, -1).map((posSize, index) => (
         <Sash
           key={index}
+          split={split}
           className={classNames(
             !allowResize && sashDisabledClassName,
             split === "vertical"

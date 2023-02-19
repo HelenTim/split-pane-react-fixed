@@ -52,6 +52,7 @@ export interface ISplitProps extends HTMLElementProps {
 }
 
 export interface ISashProps {
+  split:string;
   className?: string;
   style: React.CSSProperties;
   render: (active: boolean) => void;

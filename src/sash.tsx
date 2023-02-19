@@ -9,6 +9,7 @@ export default function Sash({
     onDragging,
     onDragEnd,
     onSashMouseEnter,
+    split,
     ...others
 }: ISashProps) {
     const timeout = useRef<number | null>(null);
@@ -34,7 +35,7 @@ export default function Sash({
                 className
             )}
             onMouseEnter={(e) => {
-                onSashMouseEnter?.(e, others.key);
+                onSashMouseEnter?.(e, split, others.key);
                 timeout.current = setTimeout(() => {
                     setActive(true);
                 }, 150);

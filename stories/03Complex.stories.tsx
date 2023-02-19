@@ -1,4 +1,4 @@
-import {useCallback} from '@storybook/client-api';
+import {useCallback, useRef} from '@storybook/client-api';
 import React, { useState } from 'react';
 import SplitPane, {Pane } from '../src';
 import '../src/themes/default.scss';
@@ -17,10 +17,23 @@ export const ComplexLayout = () => {
         display: 'flex',
         alignItems: 'center',
         justifyContent: 'center',
-    };
+  };
+
+  const notComputedDis = useRef(false);
+  
+  const setZhi = useCallback((values, e) => { 
+    console.log({ values });
+    if (values[0] == 300 && e.movementX < 0) {
+      notComputedDis.current = true;
+      setSizes([sizes[0] + e.movementX, sizes[1] - e.movementX]);
+    } else {
+      notComputedDis.current = false;
+      setSizes2(values);
+    }
+  },[]);
   
   const sashMouseEnter = useCallback((e) => {
-    console.log({e})
+    // console.log({e})
   }, []);
   
     return (
@@ -47,16 +60,18 @@ export const ComplexLayout = () => {
                 <SplitPane
                   resizerSize={1}
                   sizes={sizes2}
-                  onChange={setSizes2}
+                  onChange={setZhi}
+                  onDragEnd={() => (notComputedDis.current = false)}
                   sashRender={() => <div>左右拖拽调整区域大小</div>}
-                  onSashMouseEnter={ sashMouseEnter}
+                  onSashMouseEnter={sashMouseEnter}
+                  notComputedDis={notComputedDis.current}
                 >
-                  <Pane minSize={190}>
+                  <Pane minSize={300} primary={sizes2[0] == 300}>
                     <div style={{ ...layoutCSS, background: "blue" }}></div>
                   </Pane>
 
                   <Pane
-                    primary
+                    primary={sizes2[0] != 300 && !notComputedDis.current}
                     minSize={150}
                     maxSize={295}
                     className="properPane"
