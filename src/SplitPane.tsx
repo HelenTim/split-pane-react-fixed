@@ -239,18 +239,18 @@ const SplitPane = ({
         record.current &&
         !notComputedDisRef.current &&
         e.movementX > 0 &&
-        distanceX < referSizeRef.current[0] - sizes[0]
+        distanceX < cacheSizes.current.sizes[1] - referSizeRef.current[1]
       ) {
-        axis.current = { x: e.pageX, y: e.pageY };
+        // axis.current = { x: e.pageX, y: e.pageY };
         cacheSizes.current.sizes = referSizeRef.current;
-        distanceX = curAxis[splitAxis] - axis.current[splitAxis];
+        distanceX = 0;
       }
 
       if (
         record.current &&
         !notComputedDisRef.current &&
         e.movementX > 0 &&
-        distanceX == referSizeRef.current[0] - sizes[0]
+        distanceX >= cacheSizes.current.sizes[1] - referSizeRef.current[1]
       ) {
         record.current = false;
         cacheSizes.current.sizes = referSizeRef.current;
@@ -281,7 +281,7 @@ const SplitPane = ({
 
       onChange(nextSizes, e);
     },
-    [paneLimitSizes, onChange, notComputedDis]
+    [paneLimitSizes, onChange]
   );
 
   const paneFollow = !(performanceMode && isDragging);
