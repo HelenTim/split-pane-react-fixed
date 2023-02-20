@@ -82,10 +82,10 @@ function App () {
 | className | split pane custom class name | string |void |
 | sashRender | User defined sliding axis function | (index: number, active: boolean) => void |void |
 | performanceMode | High performance mode to avoid excessive pressure on the browser | boolean | false |
-| onChange | Callback of size change | (sizes: number[]) => void |void |
-| onDragStart | This callback is invoked when a drag starts | () => void |void |
-| onDragEnd | This callback is invoked when a drag ends | () => void |void |
-| onSashMouseEnter | This callback is invoked when mouse in  sash | (e)=>void |void |
+| onChange | Callback of size change | (sizes: number[],e:MouseEvent) => void |void |
+| onDragStart | This callback is invoked when a drag starts | (e:MouseEvent) => void |void |
+| onDragEnd | This callback is invoked when a drag ends | (e:MouseEvent) => void |void |
+| onSashMouseEnter | This callback is invoked when mouse in  sash | (e:MouseEvent,index:number)=>void |void |
 
 **Pane**
 

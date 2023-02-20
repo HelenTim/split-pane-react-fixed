@@ -43,6 +43,7 @@ export interface ISplitProps extends HTMLElementProps {
   className?: string;
   sashClassName?: string;
   performanceMode?: boolean;
+  notComputedDis?: boolean;
   /**
    * Specify the size fo resizer
    *
@@ -52,13 +53,16 @@ export interface ISplitProps extends HTMLElementProps {
 }
 
 export interface ISashProps {
+  split: string;
   className?: string;
   style: React.CSSProperties;
   render: (active: boolean) => void;
   onDragStart: React.MouseEventHandler<HTMLDivElement>;
   onDragging: React.MouseEventHandler<HTMLDivElement>;
   onDragEnd: React.MouseEventHandler<HTMLDivElement>;
-  onSashMouseEnter?: (e: MouseEvent, index: number) => void;
+  onSashMouseEnter?: (e: MouseEvent, split: string, index: number) => void;
+  index: number;
+  key: number;
 }
 
 export interface ISashContentProps {
