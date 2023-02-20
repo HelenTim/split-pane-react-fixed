@@ -281,7 +281,7 @@ const SplitPane = ({
 
       onChange(nextSizes, e);
     },
-    [paneLimitSizes, onChange]
+    [paneLimitSizes, onChange, notComputedDis]
   );
 
   const paneFollow = !(performanceMode && isDragging);
