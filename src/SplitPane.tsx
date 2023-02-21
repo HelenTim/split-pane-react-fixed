@@ -1,3 +1,5 @@
+/*此插件只需要保证当前时刻面板值（cacheSizes.current.sizes）和对应的鼠标位置的参考值axis.current正确其他的就不用管。例如我们通过size的方式修改面板大小（而不是拖拽）后，就需要同步这个两个值，例如224/228行*/
+
 import React, {
   useEffect,
   useMemo,
@@ -40,7 +42,6 @@ const SplitPane = ({
   ...others
 }: ISplitProps) => {
   const notComputedDisRef = useRef<boolean>(notComputedDis);
-  const record = useRef<boolean>(false);
   const eventSelf = useRef<any>(null);
   const axis = useRef<IAxis>({ x: 0, y: 0 });
   const wrapper = useRef<HTMLDivElement>(null);
@@ -52,7 +53,6 @@ const SplitPane = ({
   notComputedDisRef.current = notComputedDis;
 
   useEffect(() => {
-    record.current = false;
     const resizeObserver = new ResizeObserver(() => {
       setWrapperRect(wrapper?.current?.getBoundingClientRect() ?? {});
     });
@@ -216,11 +216,6 @@ const SplitPane = ({
     },
     [onDragEnd, sizes, sashPosSizes]
   );
-  const change = useMemo(() => {
-    if (!notComputedDis) {
-      record.current = !notComputedDis;
-    }
-  }, [notComputedDis]);
   const onDragging = useCallback(
     // 里面用的sizes等于cacheSizes.current.sizes。即使我们在deps里加入sizes，下面的sizes也不会立即更新。
     // 我们可以把sashPosSizes也存一个current值以供后面使用
