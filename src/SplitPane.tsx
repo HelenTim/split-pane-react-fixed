@@ -88,7 +88,6 @@ const SplitPane = ({
     [children, wrapSize]
   );
 
-
   const sizes = useMemo(
     function () {
       // 计算尺寸在这里
@@ -198,8 +197,8 @@ const SplitPane = ({
   const dragStart = useCallback(
     function (e) {
       document?.body?.classList?.add(bodyDisableUserSelect);
-      axis.current = { x: e.pageX, y: e.pageY };
-      cacheSizes.current = { sizes, sashPosSizes };  // 缓存数据和分割线位置
+      axis.current = { x: e.clientX, y: e.clientY };
+      cacheSizes.current = { sizes, sashPosSizes }; // 缓存数据和分割线位置
       eventSelf.current = e;
       setDragging(true);
       onDragStart(e);
@@ -210,7 +209,7 @@ const SplitPane = ({
   const dragEnd = useCallback(
     function (e) {
       document?.body?.classList?.remove(bodyDisableUserSelect);
-      axis.current = { x: e.pageX, y: e.pageY };
+      axis.current = { x: e.clientX, y: e.clientY };
       cacheSizes.current = { sizes, sashPosSizes };
       setDragging(false);
       onDragEnd(e);
@@ -227,37 +226,16 @@ const SplitPane = ({
     // 我们可以把sashPosSizes也存一个current值以供后面使用
     function (e, i) {
       if (notComputedDisRef.current) {
+        axis.current = {
+          x: window.innerWidth - referSizeRef.current[1],
+          y: e.clientY,
+        };
+        cacheSizes.current.sizes = referSizeRef.current;
         onChange([...referSizeRef.current], e);
         return;
       }
-
-      const curAxis = {x: e.pageX, y: e.pageY};
+      const curAxis = { x: e.clientX, y: e.clientY };
       let distanceX = curAxis[splitAxis] - axis.current[splitAxis];
-
-
-      if (
-        record.current &&
-        !notComputedDisRef.current &&
-        e.movementX > 0 &&
-        distanceX < cacheSizes.current.sizes[1] - referSizeRef.current[1]
-      ) {
-        // axis.current = { x: e.pageX, y: e.pageY };
-        cacheSizes.current.sizes = referSizeRef.current;
-        distanceX = 0;
-      }
-
-      if (
-        record.current &&
-        !notComputedDisRef.current &&
-        e.movementX > 0 &&
-        distanceX >= cacheSizes.current.sizes[1] - referSizeRef.current[1]
-      ) {
-        record.current = false;
-        cacheSizes.current.sizes = referSizeRef.current;
-        axis.current = { x: e.pageX, y: e.pageY };
-        distanceX = curAxis[splitAxis] - axis.current[splitAxis];
-      }
-
 
       const leftBorder = -Math.min(
         cacheSizes.current.sizes[i] - paneLimitSizes[i][0],
@@ -287,8 +265,7 @@ const SplitPane = ({
   const paneFollow = !(performanceMode && isDragging);
   const paneSizes = paneFollow ? sizes : cacheSizes.current.sizes;
   const panePoses = paneFollow ? sashPosSizes : cacheSizes.current.sashPosSizes;
- 
-  
+
   return (
     <div
       className={classNames(
